@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased] 
+
+### Added
+- Added support for skipping full SDP renegotiations when switching simulcast streams.  This will result in less freezing when switching between layers in response to a network event as done in `VideoPriorityBasedPolicy`.  This will have no impact if not using simulcast.
+
+### Changed
+
+### Removed
+
+### Fixed
+
 ## [2.16.0] - 2021-08-17
 
 ### Added
