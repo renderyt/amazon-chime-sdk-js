@@ -487,7 +487,7 @@ Resources:
                     "width": 24,
                     "height": 6,
                     "properties": {
-                        "query": "SOURCE \"${Source}\" | filter name in [\"meetingFailed\"]\n| fields\nfromMillis(@timestamp) as timestamp,\nconcat(attributes.osName, \" \", attributes.osVersion) as operatingSystem,\nconcat(attributes.browserName, \" \", attributes.browserMajorVersion) as browser,\nattributes.meetingStatus as failedStatus,\nconcat(attributes.meetingDurationMs / 1000, \"s\") as meetingDurationMs,\nattributes.retryCount as retryCount,\nattributes.poorConnectionCount as poorConnectionCount\n| sort @timestamp desc\n",
+                        "query": "SOURCE \"${Source}\" | filter name in [\"meetingFailed\"]\n| fields\nfromMillis(@timestamp) as timestamp,\nconcat(attributes.osName, \" \", attributes.osVersion) as operatingSystem,\nconcat(attributes.browserName, \" \", attributes.browserMajorVersion) as browser,\nattributes.meetingStatus as failedStatus,\nconcat(attributes.meetingDurationMs / 1000, \"s\") as meetingDurationMs,\nattributes.retryCount as retryCount,\nattributes.poorConnectionCount as poorConnectionCount,\nattributes.meetingHistory.signalingDropped as signalingDroppedCount\n| sort @timestamp desc\n",
                         "region": "us-east-1",
                         "stacked": false,
                         "title": "Dropped attendees",
