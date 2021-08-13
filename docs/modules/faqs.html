@@ -202,6 +202,24 @@ handling status: SignalingBadRequest
 						<li>The close code <code>4410</code> from the Chime backend indicates that an attendee has attempted to join an already-ended meeting. The Chime SDK for JavaScript throws an error with the status code <code>MeetingEnded</code>.</li>
 						<li>The close code between <code>4500</code> and <code>4599</code> (inclusive) indicates an internal server error in the Amazon Chime backend. In this case, the Chime SDK for JavaScript throws an error with the status code <code>SignalingInternalServerError</code>. Please create a GitHub issue including the Chime SDK browser logs.</li>
 					</ol>
+					<a href="#when-does-the-amazon-chime-sdk-retry-the-connection-can-i-customize-this-retry-behavior" id="when-does-the-amazon-chime-sdk-retry-the-connection-can-i-customize-this-retry-behavior" style="color: inherit; text-decoration: none;">
+						<h3>When does the Amazon Chime SDK retry the connection? Can I customize this retry behavior?</h3>
+					</a>
+					<p>The Amazon Chime SDK for JavaScript retries the connection in the following situations.</p>
+					<ul>
+						<li>The SDK misses consecutive pong messages from the Chime server.</li>
+						<li>The SDK detects a high rate of audio packet loss.</li>
+						<li>The SDK experiences a significant audio delay.</li>
+						<li>The SDK encounters a retryable error during the session.</li>
+					</ul>
+					<p>The SDK uses <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/connectionhealthpolicy/ConnectionHealthPolicyConfiguration.ts">ConnectionHealthPolicyConfiguration</a> to trigger a reconnection. We recommend using the default configuration, but you can also provide the custom ConnectionHealthPolicyConfiguration object to change this behavior.</p>
+					<ul>
+						<li>Configure <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/connectionhealthpolicy/ConnectionHealthPolicyConfiguration.ts#L24">missed pong threshold</a>: The current missed pong threshold is set to 4 in JS SDK. For example, you can set the missed pongs upper threshold to zero to force restart the session.</li>
+						<li>Configure <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/connectionhealthpolicy/ConnectionHealthPolicyConfiguration.ts#L8">connectionUnhealthyThreshold</a>: The current no packets received recently threshold is 25 for consecutive stats with no packets received. You can reduce this value for a faster retry.</li>
+						<li>Configure <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/connectionhealthpolicy/ConnectionHealthPolicyConfiguration.ts#L25">maximumAudioDelayMs</a> and <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/connectionhealthpolicy/ConnectionHealthPolicyConfiguration.ts#L26">maximumAudioDelayDataPoints</a>: The current signaicant audio delay threshold is 60000 ms with 10 data points.</li>
+						<li>Retryable errors are errors with <a href="https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionstatus.html#isfailure">retryable response status codes</a> received regarding the session. i.e. status code with <code>TaskFailed</code> or <code>SignalingInternalServerError</code> will handled for retries.</li>
+					</ul>
+					<p>The maximum amount of time to allow for connecting is 15 seconds, which can be configurable in <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSessionConfiguration.ts#L40">MeetingSessionConfiguration</a>. The <a href="https://github.com/aws/amazon-chime-sdk-js/blob/master/src/meetingsession/MeetingSessionConfiguration.ts#L67">reconnectTimeout</a> is configurable for how long you want to timeout the reconnection. The default value is 2 minutes.</p>
 					<a href="#media" id="media" style="color: inherit; text-decoration: none;">
 						<h2>Media</h2>
 					</a>

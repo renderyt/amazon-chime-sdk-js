@@ -145,6 +145,24 @@ The possible reasons are as follows:
 2. The close code `4410` from the Chime backend indicates that an attendee has attempted to join an already-ended meeting. The Chime SDK for JavaScript throws an error with the status code `MeetingEnded`.
 3. The close code between `4500` and `4599` (inclusive) indicates an internal server error in the Amazon Chime backend. In this case, the Chime SDK for JavaScript throws an error with the status code `SignalingInternalServerError`. Please create a GitHub issue including the Chime SDK browser logs.
 
+### When does the Amazon Chime SDK retry the connection? Can I customize this retry behavior?
+The Amazon Chime SDK for JavaScript retries the connection in the following situations.
+
+* The SDK misses consecutive pong messages from the Chime server.
+* The SDK detects a high rate of audio packet loss.
+* The SDK experiences a significant audio delay.
+* The SDK encounters a retryable error during the session.
+
+The SDK uses [ConnectionHealthPolicyConfiguration](https://github.com/aws/amazon-chime-sdk-js/blob/master/src/connectionhealthpolicy/ConnectionHealthPolicyConfiguration.ts) to trigger a reconnection. We recommend using the default configuration, but you can also provide the custom ConnectionHealthPolicyConfiguration object to change this behavior. 
+
+* Configure [missed pong threshold](https://github.com/aws/amazon-chime-sdk-js/blob/master/src/connectionhealthpolicy/ConnectionHealthPolicyConfiguration.ts#L24): The current missed pong threshold is set to 4 in JS SDK. For example, you can set the missed pongs upper threshold to zero to force restart the session.
+* Configure [connectionUnhealthyThreshold](https://github.com/aws/amazon-chime-sdk-js/blob/master/src/connectionhealthpolicy/ConnectionHealthPolicyConfiguration.ts#L8): The current no packets received recently threshold is 25 for consecutive stats with no packets received. You can reduce this value for a faster retry.
+* Configure [maximumAudioDelayMs](https://github.com/aws/amazon-chime-sdk-js/blob/master/src/connectionhealthpolicy/ConnectionHealthPolicyConfiguration.ts#L25) and [maximumAudioDelayDataPoints](https://github.com/aws/amazon-chime-sdk-js/blob/master/src/connectionhealthpolicy/ConnectionHealthPolicyConfiguration.ts#L26): The current signaicant audio delay threshold is 60000 ms with 10 data points. 
+* Retryable errors are errors with [retryable response status codes](https://aws.github.io/amazon-chime-sdk-js/classes/meetingsessionstatus.html#isfailure) received regarding the session. i.e. status code with `TaskFailed` or `SignalingInternalServerError` will handled for retries.
+
+The maximum amount of time to allow for connecting is 15 seconds, which can be configurable in [MeetingSessionConfiguration](https://github.com/aws/amazon-chime-sdk-js/blob/0147ed9fb76429a70fb0161405687af63b592fe0/src/meetingsession/MeetingSessionConfiguration.ts#L40). The [reconnectTimeout](https://github.com/aws/amazon-chime-sdk-js/blob/0147ed9fb76429a70fb0161405687af63b592fe0/src/meetingsession/MeetingSessionConfiguration.ts#L67) is configurable for how long you want to timeout the reconnection. The default value is 2 minutes.
+
+
 ## Media
 
 ### Which media regions is the Amazon Chime SDK available in? How do I choose the best media region to place my meetings?
