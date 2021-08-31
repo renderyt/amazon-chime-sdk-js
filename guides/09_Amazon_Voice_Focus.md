@@ -100,6 +100,20 @@ because it violates the following Content Security Policy directive…
 
 If you need guidance with correct CSP configuration to use Amazon Voice Focus, contact AWS Support.
 
+All applications that use voice and video connectivity — _e.g._, `AudioVideoFacade` classes — will need:
+
+* `connect-src`: `*.chime.aws` to reach signaling servers.
+
+To enable CSP, you need to configure your web server to return the Content-Security-Policy HTTP header， like this:
+```
+Content-Security-Policy: connect-src '*.chime.aws'
+```
+
+Given the above CSP header, other connections that are not with `*.chime.aws` suffix will be blocked and won't load.
+
+For guidance on how to add the response header from your web server, you can use Lambda@Edge and Amazon CloudFront to do it for you. Reference: https://aws.amazon.com/blogs/networking-and-content-delivery/adding-http-security-headers-using-lambdaedge-and-amazon-cloudfront/
+
+
 ### Cross-Origin Opener Policy
 
 Some execution modes require careful configuration of web security, including less common headers like [`Cross-Origin-Opener-Policy`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cross-Origin-Opener-Policy). To opt in to these execution modes, send

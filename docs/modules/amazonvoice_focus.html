@@ -193,6 +193,15 @@ because <span class="hljs-keyword">it</span> violates <span class="hljs-keyword"
 because <span class="hljs-keyword">it</span> violates <span class="hljs-keyword">the</span> following Content Security Policy directive…
 </code></pre>
 					<p>If you need guidance with correct CSP configuration to use Amazon Voice Focus, contact AWS Support.</p>
+					<p>All applications that use voice and video connectivity — <em>e.g.</em>, <code>AudioVideoFacade</code> classes — will need:</p>
+					<ul>
+						<li><code>connect-src</code>: <code>*.chime.aws</code> to reach signaling servers.</li>
+					</ul>
+					<p>To enable CSP, you need to configure your web server to return the Content-Security-Policy HTTP header， like this:</p>
+					<pre><code>Content-<span class="hljs-keyword">Security</span>-<span class="hljs-keyword">Policy</span>: <span class="hljs-keyword">connect</span>-src <span class="hljs-string">&#x27;*.chime.aws&#x27;</span>
+</code></pre>
+					<p>Given the above CSP header, other connections that are not with <code>*.chime.aws</code> suffix will be blocked and won&#39;t load.</p>
+					<p>For guidance on how to add the response header from your web server, you can use Lambda@Edge and Amazon CloudFront to do it for you. Reference: <a href="https://aws.amazon.com/blogs/networking-and-content-delivery/adding-http-security-headers-using-lambdaedge-and-amazon-cloudfront/">https://aws.amazon.com/blogs/networking-and-content-delivery/adding-http-security-headers-using-lambdaedge-and-amazon-cloudfront/</a></p>
 					<a href="#cross-origin-opener-policy" id="cross-origin-opener-policy" style="color: inherit; text-decoration: none;">
 						<h3>Cross-Origin Opener Policy</h3>
 					</a>
